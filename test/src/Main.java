@@ -2,11 +2,14 @@
 import java.io.InputStream;
 import java.util.List;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
@@ -17,26 +20,42 @@ import com.amazonaws.services.ec2.model.RunInstancesResult;
 import com.amazonaws.services.ec2.model.Tag;
 
 
+
 public class Main 
 {
+	
+	private static void init() throws Exception {
+    	/*
+		 * This credentials provider implementation loads your AWS credentials
+		 * from a properties file at the root of your classpath.
+		 */
+        dynamoDB = new AmazonDynamoDBClient(new ClasspathPropertiesFileCredentialsProvider());
+        Region usEast1 = Region.getRegion(Regions.US_EAST_1);
+        dynamoDB.setRegion(usEast1);
+    }
+	
 	static AmazonDynamoDBClient dynamoDB;
 	
     public static void main(String[] args) throws Exception 
     {
+    	try {
+            String tableName = "students3";
+    	} catch (AmazonServiceException ase)
+    	{
+    		
+    	}catch (AmazonClientException ace) 
+    	{
+    		
+    	}
     	
-    	
-        System.out.println("===========================================");
-        System.out.println("Welcome to the AWS Java SDK!");
-        System.out.println("===========================================");
+       
         /**
          * Open DB, pass in students.csv.
          * Check DB 
          * For each user in DBstudents.csv, create an instance.
          * 
          */
-        createInstance();
-        // Committtt!!
-        		
+        createInstance();   		
         	    	
 
     }
