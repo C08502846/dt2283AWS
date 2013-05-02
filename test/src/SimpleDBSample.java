@@ -68,7 +68,7 @@ public class SimpleDBSample {
 
         try {
             // Create a domain
-            String myDomain = "MyStore";
+            String myDomain = "Ssss";
             System.out.println("Creating domain called " + myDomain + ".\n");
             sdb.createDomain(new CreateDomainRequest(myDomain));
 

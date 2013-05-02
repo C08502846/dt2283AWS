@@ -55,7 +55,7 @@ public class AWSJavaMailSample {
      */
     private static final String TO = "barcoe4@hotmail.com";
     private static final String FROM = "barcoe4@hotmail.com";
-    private static final String BODY = "Hello World!";
+    private static final String BODY = "Hello World! Wazupppppp!";
     private static final String SUBJECT = "Hello World!";
 
     public static void main(String[] args) throws IOException {

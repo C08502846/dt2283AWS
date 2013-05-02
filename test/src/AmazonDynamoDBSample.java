@@ -79,7 +79,7 @@ public class AmazonDynamoDBSample {
         init();
 
         try {
-            String tableName = "students3";
+            String tableName = "students4";
 
             // Create a table with a primary hash key named 'name', which holds a string
             CreateTableRequest createTableRequest = new CreateTableRequest().withTableName(tableName)
@@ -145,7 +145,8 @@ public class AmazonDynamoDBSample {
         return item;
     }
 
-    private static void waitForTableToBecomeAvailable(String tableName) {
+    private static void waitForTableToBecomeAvailable(String tableName) 
+    {
         System.out.println("Waiting for " + tableName + " to become ACTIVE...");
 
         long startTime = System.currentTimeMillis();
