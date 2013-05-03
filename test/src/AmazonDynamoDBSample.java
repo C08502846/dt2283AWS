@@ -70,8 +70,8 @@ public class AmazonDynamoDBSample {
 		 * from a properties file at the root of your classpath.
 		 */
         dynamoDB = new AmazonDynamoDBClient(new ClasspathPropertiesFileCredentialsProvider());
-        Region usWest2 = Region.getRegion(Regions.EU_WEST_1);
-        dynamoDB.setRegion(usWest2);
+        Region usEast1 = Region.getRegion(Regions.US_EAST_1);
+        dynamoDB.setRegion(usEast1);
     }
 
 
@@ -79,7 +79,7 @@ public class AmazonDynamoDBSample {
         init();
 
         try {
-            String tableName = "students4";
+            String tableName = "1111";
 
             // Create a table with a primary hash key named 'name', which holds a string
             CreateTableRequest createTableRequest = new CreateTableRequest().withTableName(tableName)

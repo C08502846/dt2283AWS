@@ -3,6 +3,15 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -36,12 +45,22 @@ import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
 import com.amazonaws.services.ec2.model.Tag;
+import com.amazonaws.services.simpleemail.AWSJavaMailTransport;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient;
+import com.amazonaws.services.simpleemail.model.ListVerifiedEmailAddressesResult;
+import com.amazonaws.services.simpleemail.model.VerifyEmailAddressRequest;
 
 
 
 public class Main 
 {
 	static AmazonDynamoDBClient dynamoDB;
+	
+    private static final String TO = "barcoe4@hotmail.com";
+    private static final String FROM = "barcoe4@hotmail.com";
+    private static final String BODY = "Hello World!";
+    private static final String SUBJECT = "Hello World!";
 	
 	private static void init() throws Exception 
 	{
@@ -56,13 +75,65 @@ public class Main
 	
     public static void main(String[] args) throws Exception 
     {
-//    			String fileName="src/students22.csv";
-//    			CSVFileReader x = new CSVFileReader(fileName);
-//    			x.ReadFile();
-//    			x.displayArrayList();
     	init();
+    	
+		String fileName="src/students22.csv";
+		CSVFileReader x = new CSVFileReader(fileName);
+		x.ReadFile();
+		x.displayArrayList();	    
+
+    	AWSCredentials credentials = new ClasspathPropertiesFileCredentialsProvider().getCredentials();
+ 		AmazonSimpleEmailService ses = new AmazonSimpleEmailServiceClient(credentials);
+ 		Region usWest2 = Region.getRegion(Regions.US_EAST_1);
+ 		ses.setRegion(usWest2);
+ 		
+ 		verifyEmailAddress(ses, FROM);
+ 		
+ 		
+ 		/*
+		 * Setup JavaMail to use the Amazon Simple Email Service by specifying
+		 * the "aws" protocol.
+		 */
+		Properties props = new Properties();
+		props.setProperty("mail.transport.protocol", "aws");
+		
+		props.setProperty("mail.aws.user", credentials.getAWSAccessKeyId());
+        props.setProperty("mail.aws.password", credentials.getAWSSecretKey());
+        
+        Session session = Session.getInstance(props);
+        
+        try {
+            // Create a new Message
+            Message msg = new MimeMessage(session);
+            msg.setFrom(new InternetAddress(FROM));
+            msg.addRecipient(Message.RecipientType.TO, new InternetAddress(TO));
+            msg.setSubject(SUBJECT);
+            msg.setText(BODY);
+            msg.saveChanges();
+
+            // Reuse one Transport object for sending all your messages
+            // for better performance
+            Transport t = new AWSJavaMailTransport(session, null);
+            t.connect();
+            t.sendMessage(msg, null);
+
+            // Close your transport when you're completely done sending
+            // all your messages
+            t.close();
+        } catch (AddressException e) {
+            e.printStackTrace();
+            System.out.println("Caught an AddressException, which means one or more of your "
+                    + "addresses are improperly formatted.");
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            System.out.println("Caught a MessagingException, which means that there was a "
+                    + "problem sending your message to Amazon's E-mail Service check the "
+                    + "stack trace for more information.");
+        }
+
+
     	try {
-            String tableName = "TestTable";
+            String tableName = "TestTable3";
             // Create a table with a primary hash key named 'name', which holds a string
             CreateTableRequest createTableRequest = new CreateTableRequest().withTableName(tableName)
                     .withKeySchema(new KeySchemaElement().withAttributeName("name").withKeyType(KeyType.HASH))
@@ -82,13 +153,62 @@ public class Main
             // Add Contents of students.csv to Database. here
             
             // Add an item
-            Map<String, AttributeValue> item = newItem("Bill & Ted's Excellent Adventure", 1989, "****", "James", "Sara");
+            Map<String, AttributeValue> item = newItem("name1","c76000001", "i.smith", "ian.smith@nodit.ie", "smith", "ian", "J", "DT228", 2, "EL");
             PutItemRequest putItemRequest = new PutItemRequest(tableName, item);
             PutItemResult putItemResult = dynamoDB.putItem(putItemRequest);
             System.out.println("Result: " + putItemResult);
+        
 
             // Add another item
-            item = newItem("Airplane", 1980, "*****", "James", "Billy Bob");
+            item = newItem("name2","c76000002", "j.kennedy", "john.kennedy@nodit.ie", "kennedy", "john", "f", "DT228", 2, "RE");
+            putItemRequest = new PutItemRequest(tableName, item);
+            putItemResult = dynamoDB.putItem(putItemRequest);
+            System.out.println("Result: " + putItemResult);
+            
+         // Add another item
+            item = newItem("name3","c76000003", "l.johnson", "lyndon.johnston@nodit.ie", "johnston", "lyndon", "b", "DT228", 2, "RE");
+            putItemRequest = new PutItemRequest(tableName, item);
+            putItemResult = dynamoDB.putItem(putItemRequest);
+            System.out.println("Result: " + putItemResult);
+            
+            // Add another item
+            item = newItem("name4","c76000004", "m.thatcher", "margaret.thatcher@nodit.ie", "thatcher", "margaret", " ", "DT211", 2, "EL");
+            putItemRequest = new PutItemRequest(tableName, item);
+            putItemResult = dynamoDB.putItem(putItemRequest);
+            System.out.println("Result: " + putItemResult);
+            
+            // Add another item
+            item = newItem("name5","c76000005", "n.machiavelli", "nicolo.machiavelli@nodit.ie", "machiavelli", "nicolo", " ", "DT211", 4, "RE");
+            putItemRequest = new PutItemRequest(tableName, item);
+            putItemResult = dynamoDB.putItem(putItemRequest);
+            System.out.println("Result: " + putItemResult);
+            
+            // Add another item
+            item = newItem("name6","c76000006", "s.beckett", "samuel.beckett@nodit.ie", "beckett", "samuel", " ", "DT228", 3, "RE");
+            putItemRequest = new PutItemRequest(tableName, item);
+            putItemResult = dynamoDB.putItem(putItemRequest);
+            System.out.println("Result: " + putItemResult);
+            
+            // Add another item
+            item = newItem("name7","c76000007", "j.joyce", "james.joyce@nodit.ie", "joyce", "james", " ", "DT211", 2, "RE");
+            putItemRequest = new PutItemRequest(tableName, item);
+            putItemResult = dynamoDB.putItem(putItemRequest);
+            System.out.println("Result: " + putItemResult);
+            
+            // Add another item
+            item = newItem("name8","c76000008", "j.prufrock", "jonathan.prufock@nodit.ie", "prufrock", "jonathan", "a", "DT228", 2, "RE");
+            putItemRequest = new PutItemRequest(tableName, item);
+            putItemResult = dynamoDB.putItem(putItemRequest);
+            System.out.println("Result: " + putItemResult);
+            
+            // Add another item
+            item = newItem("name9","c76000009", "e.bronte", "emily.bronte@nodit.ie", "bronte", "emily", " ", "DT228", 4, "EL");
+            putItemRequest = new PutItemRequest(tableName, item);
+            putItemResult = dynamoDB.putItem(putItemRequest);
+            System.out.println("Result: " + putItemResult);
+            
+            // Add another item
+            item = newItem("name10","c76000010", "s.connor", "sarah.connor@nodit.ie", "connor", "sarah", "c", "DT211", 2, "EL");
             putItemRequest = new PutItemRequest(tableName, item);
             putItemResult = dynamoDB.putItem(putItemRequest);
             System.out.println("Result: " + putItemResult);
@@ -117,7 +237,7 @@ public class Main
          * For each user in DBstudents.csv, create an instance.
          * 
          */
-        //createInstance();   		
+        createInstance();   		
         	    	
 
     }
@@ -126,7 +246,7 @@ public class Main
     	AWSCredentialsProvider credentialsProvider = new ClasspathPropertiesFileCredentialsProvider();
 		AmazonEC2 ec2 = new AmazonEC2Client(credentialsProvider);
 		ec2.setEndpoint("ec2.us-east-1.amazonaws.com");
-		/*
+		
     	// CREATE EC2 INSTANCES
 		RunInstancesRequest runInstancesRequest = new RunInstancesRequest()
 		    .withInstanceType("t1.micro")
@@ -153,15 +273,23 @@ public class Main
 		}
 		
 		System.out.println("EC2 Instances: " +runInstancesRequest); 
-		*/
+		
     }
-    private static Map<String, AttributeValue> newItem(String name, int year, String rating, String... fans) {
+    private static Map<String, AttributeValue> newItem(String name, String studentid, String username, String email, String surname, String firstname, String mi, String programme, int stage, String rstat) 
+    {
         Map<String, AttributeValue> item = new HashMap<String, AttributeValue>();
+        
         item.put("name", new AttributeValue(name));
-        item.put("year", new AttributeValue().withN(Integer.toString(year)));
-        item.put("rating", new AttributeValue(rating));
-        item.put("fans", new AttributeValue().withSS(fans));
-        item.put("fans", new AttributeValue().withSS(fans));
+        item.put("studentid", new AttributeValue(studentid));
+        item.put("username", new AttributeValue(username));
+        item.put("email", new AttributeValue(email));
+        item.put("surname", new AttributeValue(surname));
+        item.put("firstname", new AttributeValue(firstname));
+        item.put("mi", new AttributeValue(mi));
+        item.put("programme", new AttributeValue(programme));
+        item.put("stage", new AttributeValue().withN(Integer.toString(stage)));
+        item.put("rstat", new AttributeValue(rstat));
+
         return item;
     }
 
@@ -185,5 +313,13 @@ public class Main
         }
 
         throw new RuntimeException("Table " + tableName + " never went active");
+    }
+    private static void verifyEmailAddress(AmazonSimpleEmailService ses, String address) {
+        ListVerifiedEmailAddressesResult verifiedEmails = ses.listVerifiedEmailAddresses();
+        if (verifiedEmails.getVerifiedEmailAddresses().contains(address)) return;
+
+        ses.verifyEmailAddress(new VerifyEmailAddressRequest().withEmailAddress(address));
+        System.out.println("Please check the email address " + address + " to verify it");
+        System.exit(0);
     }
 }
