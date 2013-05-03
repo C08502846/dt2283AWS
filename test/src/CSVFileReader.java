@@ -32,15 +32,7 @@ public class CSVFileReader
 				storeValues.add(fileName);
 				//break comma separated line using ","
 				st = new StringTokenizer(fileName, ",");
-//				while(st.hasMoreTokens())
-//				{	
-//					
-//					System.out.println("Line # " + lineNumber + 
-//							", Token # " + tokenNumber 
-//							+ ", Token : "+ st.nextToken());
-//					
-//				}
- 
+				
 				//reset token number
 				tokenNumber = 0;
 				
