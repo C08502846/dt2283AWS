@@ -133,7 +133,7 @@ public class Main
 
 
     	try {
-            String tableName = "TestTable3";
+            String tableName = "Students";
             // Create a table with a primary hash key named 'name', which holds a string
             CreateTableRequest createTableRequest = new CreateTableRequest().withTableName(tableName)
                     .withKeySchema(new KeySchemaElement().withAttributeName("name").withKeyType(KeyType.HASH))
